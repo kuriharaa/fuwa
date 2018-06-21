@@ -51,7 +51,7 @@ client.on('message', async msg => { // eslint-disable-line
 				const video2 = await youtube.getVideoByID(video.id); // eslint-disable-line no-await-in-loop
 				await handleVideo(video2, msg, voiceChannel, true); // eslint-disable-line no-await-in-loop
 			}
-			return msg.channel.send(`playlist: **${playlist.title}** has been added to the queue!`);
+			return msg.channel.send(`playlist: **${playlist.title}** added to the queue!`);
 		} else {
 			try {
 				var video = await youtube.getVideo(url);
@@ -106,24 +106,24 @@ select number ranging from 1-10.
 		if (!serverQueue) return msg.channel.send('no songs');
 		return msg.channel.send(`now playing: **${serverQueue.songs[0].title}**`);
 	} else if (command === 'queue') {
-		if (!serverQueue) return msg.channel.send('There is nothing playing.');
+		if (!serverQueue) return msg.channel.send('no songs');
 		return msg.channel.send(`
-__**Song queue:**__
+__**song queue:**__
 ${serverQueue.songs.map(song => `**-** ${song.title}`).join('\n')}
-**Now playing:** ${serverQueue.songs[0].title}
+**now playing:** ${serverQueue.songs[0].title}
 		`);
 	} else if (command === 'pause') {
 		if (serverQueue && serverQueue.playing) {
 			serverQueue.playing = false;
 			serverQueue.connection.dispatcher.pause();
-			return msg.channel.send('paused the music for you!');
+			return msg.channel.send('paused');
 		}
 		return msg.channel.send('no songs');
 	} else if (command === 'resume') {
 		if (serverQueue && !serverQueue.playing) {
 			serverQueue.playing = true;
 			serverQueue.connection.dispatcher.resume();
-			return msg.channel.send('resumed the music');
+			return msg.channel.send('resumed');
 		}
 		return msg.channel.send('no songs');
 	}
@@ -165,7 +165,7 @@ async function handleVideo(video, msg, voiceChannel, playlist = false) {
 		serverQueue.songs.push(song);
 		console.log(serverQueue.songs);
 		if (playlist) return undefined;
-		else return msg.channel.send(` **${song.title}** has been added to the queue!`);
+		else return msg.channel.send(` **${song.title}** added to the queue!`);
 	}
 	return undefined;
 }
@@ -182,7 +182,7 @@ function play(guild, song) {
 
 	const dispatcher = serverQueue.connection.playStream(ytdl(song.url))
 		.on('end', reason => {
-			if (reason === 'stream is not generating quickly enough.') console.log('song ended.');
+			if (reason === 'stream is not generating quickly enough.') console.log('ended.');
 			else console.log(reason);
 			serverQueue.songs.shift();
 			play(guild, serverQueue.songs[0]);
@@ -190,7 +190,7 @@ function play(guild, song) {
 		.on('error', error => console.error(error));
 	dispatcher.setVolumeLogarithmic(serverQueue.volume / 5);
 
-	serverQueue.textChannel.send(`start playing: **${song.title}**`);
+	serverQueue.textChannel.send(`playing: **${song.title}**`);
 }
 
 client.login(TOKEN);
