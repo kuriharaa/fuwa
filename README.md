@@ -1,2 +1,2 @@
 # fuwa
-discord bot
+mu discord bot
